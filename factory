@@ -1,0 +1,59 @@
+package com.wcc.jdbc;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
+
+public class ConnectionFactory {
+	private static String DRIVER;
+	private static String URL;
+	private static String USER;
+	private static String PASSWORD;
+	private static Connection conn;
+	
+	// 将加载驱动需要的信息(登录数据库需要的信息)写入属性文件
+	{// 1.加载等操作只在调用开始的时候执行一遍,因此需要写在静态代码块中
+		Properties pr = new Properties();
+		// 3.以反射的方式得到本类中的文件的文件流--------得到属性文件的流文件
+		InputStream is = ConnectionFactory.class.getResourceAsStream("Driver.properties");
+
+		// 2.载入pr对象中的数据，但是要以文件流的形式传入进来，因此需要获得文件流的对象
+		try {
+			pr.load(is);
+			
+			//4.逐条得到属性文件的内容
+			DRIVER = pr.getProperty("jdbc_driver");
+			URL = pr.getProperty("jdbc_url");
+			USER = pr.getProperty("jdbc_user");
+			PASSWORD = pr.getProperty("jdbc_pwd");
+			System.out.println(DRIVER);
+			Class.forName(DRIVER);
+			
+			
+		} catch (IOException e) {
+			System.out.println("载入文件流发生异常");
+		} catch (Exception e) {
+		System.out.println("加载失败");
+		}
+		
+	
+
+	}
+	public Connection getConnection(){
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("连接失败！！！！");
+		}
+		
+		
+		return conn;
+		
+	}
+
+}
